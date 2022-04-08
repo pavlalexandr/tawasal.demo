@@ -1,0 +1,85 @@
+﻿@page "/users"
+@page "/users/{Page:int}"
+@using Application.Model
+@using Application.Services
+
+@attribute [Authorize]
+
+<PageTitle>Users</PageTitle>
+
+
+
+@inject UsersService userService
+
+<h1>Users</h1>
+
+@if (Model == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>First name</th>
+                <th>Last name</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.Data)
+            {
+                <tr>
+                    <td>@user.Title</td>
+                    <td>@user.FirstName</td>
+                    <td>@user.LastName</td>
+                    <td><img src="@user.Picture" /></td>
+                    <td><a href="usersPosts/@user.Id"> Posts </a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        @for (int i = 0; i < Model.TotalPages; i++)
+        {
+            <span>
+                @if (Page != i)
+                {
+                    <a href="users/@i"> @(i+1) </a>
+
+                }
+                else
+                {
+                    @(i+1)
+                }
+                |
+
+            </span>
+        }
+    </div>
+}
+
+@code {
+    private PaginatedView<UserView>? Model;
+
+    [Parameter]
+    public int Page { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && Model == null)
+        {
+            Model = await userService.GetPaginatedView(Page);
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Model != null)
+            Model = await userService.GetPaginatedView(Page);
+    }
+}

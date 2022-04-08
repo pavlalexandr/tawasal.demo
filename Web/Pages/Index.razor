@@ -1,0 +1,20 @@
+﻿@page "/"
+@using Domain.Models.Settings
+
+@inject ApplicationSettingsModel settings
+<PageTitle>Index</PageTitle>
+
+<h2>Welcome to Dummy API Demo!</h2>
+
+
+<AuthorizeView>
+    <Authorized>
+        <span>Hello, @context.User.Identity?.Name!</span>
+        <form method="post" action="Identity/Account/LogOut">
+            <button type="submit" class="nav-link btn btn-link">Log out</button>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <p>Try to <a href="Identity/Account/Login">Sign in</a> with <b>@settings.Login</b> as login and password to start the jorney.</p>
+    </NotAuthorized>
+</AuthorizeView>
